@@ -27,7 +27,11 @@ namespace StringMix {
 
             foreach (var item in lexicon) {
                 itemvalue = _options.MatchesAreCaseSensitive ? item.Value : item.Value.ToLower();
-                _lexicon.Add(itemvalue, item);
+                if (_lexicon.ContainsKey(itemvalue)) {
+                    _lexicon[itemvalue].Tags.AddRange(item.Tags);
+                } else {
+                    _lexicon.Add(itemvalue, item);
+                }
             }
 
         }
