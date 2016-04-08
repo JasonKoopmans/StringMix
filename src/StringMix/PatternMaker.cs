@@ -50,7 +50,10 @@ namespace StringMix {
                     newList.Add(item);
                 }
                 foreach (var pattern in patterns) {
-                    newList.Add(pattern + item);
+                    string newitem = pattern + item;
+                    if (!newList.Contains(newitem)) {
+                        newList.Add(newitem);
+                    }
                 }
             }
             
