@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Mixer.cs" />
     <Compile Include="Model\StringMixOptions.cs" />
     <Compile Include="Model\TaggedToken.cs" />
     <Compile Include="PatternMaker.cs" />
