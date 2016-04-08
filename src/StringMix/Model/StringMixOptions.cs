@@ -41,5 +41,9 @@ namespace StringMix.Model {
             EmptyTagValue = "?";
             MatchesAreCaseSensitive = true;
         }
+        public StringMixOptions(bool MatchesAreCaseSensitive, params string[] AdditionalSeparators) : this() {
+            Separators.AddRange(AdditionalSeparators);
+            this.MatchesAreCaseSensitive = MatchesAreCaseSensitive;
+        }
     }
 }

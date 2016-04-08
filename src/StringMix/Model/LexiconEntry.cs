@@ -9,6 +9,20 @@ namespace StringMix.Model {
     /// Class to contain the details about a single element of lexicon.
     /// </summary>
     public class LexiconEntry {
+        public LexiconEntry() {
+            Tags = new List<string>();
+        }
+
+        public LexiconEntry(string Value, string Tag) : this() {
+            this.Value = Value;
+            Tags.Add(Tag);
+        }
+
+        public LexiconEntry(string Value, params string[] Tags) : this() {
+            this.Value = Value;
+            this.Tags.AddRange(Tags);
+        }
+
         /// <summary>
         /// The value of the lexicon entry.  For instance, if the problem were to tag
         /// strings containing names, "Fred" could be one value
