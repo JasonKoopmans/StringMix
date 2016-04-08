@@ -63,7 +63,72 @@ namespace StringMix.Test {
         }
 
 
-        
+        [TestMethod] 
+        public void ItsMyFirstTime() {
+            // Define some Lexicon
+            List<LexiconEntry> lex = new List<LexiconEntry>();
+
+            lex.Add(new LexiconEntry() {
+                Value = "Fred",
+                Tags = new List<string> { "F" } // For FirstName
+            });
+
+            lex.Add(new LexiconEntry() {
+                Value = "Wilma",
+                Tags = new List<string> { "F" } // For FirstName
+            });
+
+            lex.Add(new LexiconEntry() {
+                Value = "Flintstone",
+                Tags = new List<string> { "L" } // For LastName
+            });
+
+            // New Up a Tagger
+            Tagger tagger = new Tagger(lex);
+
+            List<TaggedToken> tokens = tagger.Tag("Fred and Wilma Flintstone");
+
+            // Get Patterns from these tokens
+            List<string> patterns = PatternMaker.MakePatterns(tokens);
+
+            // Do Patterns Match?!
+            Assert.IsTrue(patterns.Contains("F?FL"));
+
+        }
+
+        [TestMethod]
+        public void ItsMyFirstTimeWithAMixer() {
+            // Define some Lexicon
+            List<LexiconEntry> lex = new List<LexiconEntry>();
+
+            lex.Add(new LexiconEntry() {
+                Value = "Fred",
+                Tags = new List<string> { "F" } // For FirstName
+            });
+
+            lex.Add(new LexiconEntry() {
+                Value = "Wilma",
+                Tags = new List<string> { "F" } // For FirstName
+            });
+
+            lex.Add(new LexiconEntry() {
+                Value = "Flintstone",
+                Tags = new List<string> { "L" } // For LastName
+            });
+
+            Mixer m = new Mixer("Fred and Wilma Flintstone", lex);
+
+            List<string> combos = m.CombineAll("F", "L", " "); 
+            // Fred Flintstone
+            // Wilma Flintstone
+
+            Assert.AreEqual(2, combos.Count);
+            Assert.AreEqual("Fred Flintstone", combos[0]);
+            Assert.AreEqual("Wilma Flintstone", combos[1]);
+
+
+        }
+
         [TestMethod]
         public void BasicFirstNameLastName() {
             Tagger t = GetBasicTagger(GetBasicNameLex());
@@ -168,6 +233,44 @@ namespace StringMix.Test {
             Assert.IsTrue(patterns.Contains("FL"));
             Assert.AreEqual(1, patterns.Count);
 
+        }
+
+        [TestMethod]
+        public void BasicMixerUse() {
+            Mixer m = new Mixer("Fred and Wilma Flintstone", GetBasicTagger(GetBasicNameLex()) );
+            List<string> names = m.CombineAll("F", "L", " ");
+
+            Assert.AreEqual(2, names.Count);
+            Assert.AreEqual("Fred Flintstone", names[0]);
+            Assert.AreEqual("Wilma Flintstone", names[1]);
+
+        }
+
+        [TestMethod]
+        public void Overlap_In_Lex_Tags() {
+            List<LexiconEntry> lex = new List<LexiconEntry>();
+
+            lex.Add(new LexiconEntry() { Value="Landry", Tags=new List<string>() { "F" } });
+            lex.Add(new LexiconEntry() { Value = "Landry", Tags = new List<string>() { "L" } });
+
+            Tagger t = new Tagger(lex);
+            var tokens = t.Tag("Landry");
+
+            Assert.AreEqual(1, tokens.Count);
+            Assert.AreEqual(2, tokens[0].Tags.Count);
+
+        }
+
+        [TestMethod]
+        public void Basic_Mixer_RegexWhen_RegexExtractor() {
+            Mixer m = new Mixer(GetBasicTagger(GetBasicNameLex()));
+
+            List<List<TaggedToken>> list = m.With("Fred and Wilma Flintstone")
+                .When(WhenCriteria.RegexCriteria("F?FL"))
+                .Mix(MixActions.RegexExtraction("FL"));
+
+            Assert.AreEqual(1, list.Count);
+            Assert.AreEqual("Wilma", list[0][0].Value);
         }
 
 
