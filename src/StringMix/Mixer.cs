@@ -209,6 +209,9 @@ namespace StringMix {
         }
 
         public void Tag(string input) {
+            if (_tagger == null) {
+                throw new InvalidOperationException("There is no tagger defined for this mixer.  Please choose a different constructor if you wish to Tag() with this mixer.");
+            }
             _tokens = _tagger.Tag(input);
         }
 
@@ -232,6 +235,18 @@ namespace StringMix {
             ret.Tokens = _tokens = _tagger.Tag(input);
             ret.Patterns = PatternMaker.MakePatterns(_tokens);
 
+            return ret;
+        }
+
+        /// <summary>
+        /// With() Convenience method that would allow for further processing (Mix/Translate) though tagging is not needed.
+        /// </summary>
+        /// <param name="tokens">a List<TaggedToken> </param>
+        /// <returns>WithAnchor: an object from which the call chain can continue to Mix()</returns>
+        public WithAnchor With(List<TaggedToken> tokens) {
+            WithAnchor ret = new WithAnchor();
+            ret.Tokens = tokens;
+            ret.Patterns = PatternMaker.MakePatterns(_tokens);
             return ret;
         }
 
