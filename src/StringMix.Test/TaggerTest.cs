@@ -267,7 +267,7 @@ namespace StringMix.Test {
 
             List<List<TaggedToken>> list = m.With("Fred and Wilma Flintstone")
                 .When(WhenCriteria.RegexCriteria("F?FL"))
-                .Mix(MixActions.RegexExtraction("FL"));
+                .Mix(MixActions.RegexExtraction("FL")).Mixes;
 
             Assert.AreEqual(1, list.Count);
             Assert.AreEqual("Wilma", list[0][0].Value);
