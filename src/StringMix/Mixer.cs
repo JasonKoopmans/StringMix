@@ -16,22 +16,21 @@ namespace StringMix {
     /// </summary>
     /// <typeparam name="T">Generic Type that represents the type this class will return in its Translate method</typeparam>
     public interface ITranslator<T> where T: new() {
-        T Translate(List<List<TaggedToken>> TokenListLists);
+        T Translate(List<Mix> TokenListLists);
     }
 
     /// <summary>
-    /// MixAnchor is a Method Chaining Anchor from which callers can perform actions on "Mixes" that are the 
-    /// matched lists of token lists that result from performing Mix() on an original list of tagged tokens and
-    /// a list of patterns that should be matched
+    /// using a Translator callers can perform actions on "Mixes" that are the  matched lists of token lists that 
+    /// result from performing Mix() on an original list of tagged tokens and a list of patterns that should be matched
     /// </summary>
-    public class MixAnchor {
-        public MixAnchor() { }
+    public class Translator {
+        public Translator() { }
 
         /// <summary>
         /// The list of Matched Lists of Tokens that resulted from a call to Mix().  This is the collection
         /// of items that will translated
         /// </summary>
-        public List<List<TaggedToken>> Mixes = new List<List<TaggedToken>>();
+        public List<Mix> Mixes = new List<Mix>();
 
         /// <summary>
         /// Translates a list of matched TokenLists an object of T type.  This offers a way for a caller to express
@@ -40,7 +39,7 @@ namespace StringMix {
         /// <typeparam name="T">The type that the function should return as a result of its processing of the matched TokenList</typeparam>
         /// <param name="translator">a function that performs the translation</param>
         /// <returns>An instance of T</returns>
-        public T Translate<T>(Func< List<List<TaggedToken>>, T> translator)  where T: new() {
+        public T Translate<T>(Func< List<Mix>, T> translator)  where T: new() {
             if (Mixes.Count() == 0) {
                 return default(T);
             } else {
@@ -62,11 +61,12 @@ namespace StringMix {
     }
 
     /// <summary>
-    /// WhenAchor is a method chaining anchor class from which callers can perform actions on sets of tokens 
-    /// that match a defined pattern.  It allows for an action to be expressed against the Tokens and the 
-    /// patterns that are matched.
+    /// Using Mixer callers can perform actions on sets of tokens that match a defined pattern.  
+    /// In some cases this could be redundant to what happens in Match().  It does allow for cases
+    /// where matching a larger string in Match() provides an opportunity to further refine or map
+    /// the tagged tokens into a different list of Mixes.  
     /// </summary>
-    public class WhenAnchor {
+    public class Mixer {
         
         /// <summary>
         /// Tokens are the list of tokens that resulted from Tagging
@@ -89,40 +89,57 @@ namespace StringMix {
         /// </summary>
         /// <param name="Action">Delegate (Func<>) that accepts a list of tagged tokens, a list of patterns, and returns a List of List of TaggedTokens</param>
         /// <returns>List of List of TaggedTokens</returns>
-        public MixAnchor Mix(Func<List<TaggedToken>, List<string>, List<List<TaggedToken>>> Action) {
+        public Translator Mix(Func<List<TaggedToken>, List<string>, List<Mix>> Action) {
             if (MatchedPatterns.Count() == 0) {
-                return new MixAnchor();
+                return new Translator();
             } else {
-                return new MixAnchor() { Mixes =  Action.Invoke(Tokens, MatchedPatterns)};
+                return new Translator() { Mixes =  Action.Invoke(Tokens, MatchedPatterns)};
             }
         }
+    }
+
+    public class Mix {
+
+        public List<TaggedToken> Tokens = new List<TaggedToken>();
+        public Mix (TaggedToken token1, TaggedToken token2) {
+            Tokens.Add(token1);
+            Tokens.Add(token2);
+	    }  
+
+        public Mix (List<TaggedToken> tokens) {
+            Tokens = tokens;
+	    }
+
+        public Mix () {
+
+	    }
 
     }
     
-    public class WithAnchor {
+    public class Matcher {
         public List<TaggedToken> Tokens = new List<TaggedToken>();
         public List<string> Patterns = new List<string>();
 
         // Method: When
         // Takes: Delegate that accepts tokens and patterns and returns patterns that match
         // Returns: Object that has properties of tokens and patterns and return value
-        public WhenAnchor When(Func<List<TaggedToken>, List<string>, List<string>> criteria) {
-            return new WhenAnchor() {
+        public Mixer Match(Func<List<TaggedToken>, List<string>, List<string>> criteria) {
+            return new Mixer() {
                 Tokens = Tokens,
                 MatchedPatterns = criteria.Invoke(Tokens, Patterns)
             };
         }
 
-        public MixAnchor RegexMatchAndMix(String WhenRegex, String MixRegex) {
-            return When(WhenCriteria.RegexCriteria(WhenRegex)).Mix(MixActions.RegexExtraction(MixRegex));
+        public Translator RegexMatchAndMix(String WhenRegex, String MixRegex) {
+            return Match(MatchCriteria.RegexCriteria(WhenRegex)).Mix(MixActions.RegexExtraction(MixRegex));
         }
-        public MixAnchor RegexMatchAndMix(String MatchAndExtractPattern) {
-            return When(WhenCriteria.RegexCriteria(MatchAndExtractPattern)).Mix(MixActions.RegexExtraction(MatchAndExtractPattern));
+        public Translator RegexMatchAndMix(String MatchAndExtractPattern) {
+            return Match(MatchCriteria.RegexCriteria(MatchAndExtractPattern)).Mix(MixActions.RegexExtraction(MatchAndExtractPattern));
         }
 
     }
 
-    public class WhenCriteria {
+    public class MatchCriteria {
         
         public static Func<List<TaggedToken>, List<string>, List<string>> RegexCriteria(string expression) {
             Func<List<TaggedToken>, List<string>, List<string>> ret = (t, p) => {
@@ -143,12 +160,12 @@ namespace StringMix {
 
     public class MixActions {
 
-        public static Func<List<TaggedToken>, List<string>, List<List<TaggedToken>>> CombineAll(string tagname1, string tagname2) {
-            Func<List<TaggedToken>, List<string>,  List<List<TaggedToken>>> ret = (t, p) => {
-                List<List<TaggedToken>> list = new List<List<TaggedToken>>();
+        public static Func<List<TaggedToken>, List<string>, List<Mix>> CombineAll(string tagname1, string tagname2) {
+            Func<List<TaggedToken>, List<string>,  List<Mix>> ret = (t, p) => {
+                List<Mix> list = new List<Mix>();
                 foreach (var tag1 in t.Where(x => x.Tags.Contains(tagname1))) {
                     foreach (var tag2 in t.Where(x => x.Tags.Contains(tagname2))) {
-                        list.Add(new List<TaggedToken>(2) { tag1, tag2 });
+                        list.Add(new Mix(tag1, tag2) );
                     }
                 }
                 return list;
@@ -156,9 +173,9 @@ namespace StringMix {
             return ret;
         }
 
-        public static Func<List<TaggedToken>, List<string>, List<List<TaggedToken>>> RegexExtraction(string pattern) {
-            Func<List<TaggedToken>, List<string>, List<List<TaggedToken>>> ret = (t, ps) => {
-                List<List<TaggedToken>> list = new List<List<TaggedToken>>();
+        public static Func<List<TaggedToken>, List<string>, List<Mix>> RegexExtraction(string pattern) {
+            Func<List<TaggedToken>, List<string>, List<Mix>> ret = (t, ps) => {
+                List<Mix> list = new List<Mix>();
 
                 foreach (var p in ps) {
                     var matches = Regex.Matches(p, pattern);
@@ -168,7 +185,7 @@ namespace StringMix {
                         for (int i = match.Index; i < match.Index + match.Length; i++) {
                             set.Add(t[i]);
                         }
-                        list.Add(set);
+                        list.Add( new Mix(set) );
                     }
                 }
                 return list;
@@ -176,9 +193,9 @@ namespace StringMix {
             return ret; // delegate
         }
 
-        public static Func<List<TaggedToken>, List<string>, List<List<TaggedToken>>> GatherSets(string tagname1, string tagname2) {
-            Func<List<TaggedToken>, List<string>, List<List<TaggedToken>>> ret = (t,ps) => {
-                List<List<TaggedToken>> list = new List<List<TaggedToken>>();
+        public static Func<List<TaggedToken>, List<string>, List<Mix>> GatherSets(string tagname1, string tagname2) {
+            Func<List<TaggedToken>, List<string>, List<Mix>> ret = (t,ps) => {
+                List<Mix> list = new List<Mix>();
 
                 foreach (var p in ps) {
                     // find the first tn1
@@ -199,7 +216,7 @@ namespace StringMix {
                         // is the set full?
                         if (set.Count == 2) {
                             // Add it and reset
-                            list.Add(set);
+                            list.Add(new Mix(set));
                             set = new List<TaggedToken>(2);
                         }
 
@@ -216,7 +233,7 @@ namespace StringMix {
 
                     foreach (var tag1 in t.Where(x => x.Tags.Contains(tagname1))) {
                         foreach (var tag2 in t.Where(x => x.Tags.Contains(tagname2))) {
-                            list.Add(new List<TaggedToken>(2) { tag1, tag2 });
+                            list.Add(new Mix( tag1, tag2 ));
                         }
                     }    
                 }
@@ -229,7 +246,7 @@ namespace StringMix {
 
     }
 
-    public class Mixer {
+    public class MixPipeline {
         /// <summary>
         /// The list of tagged tokens that would result from tokenizing and tagging.  Either populated by Tag() or 
         /// a constructor that calls Tag()
@@ -248,7 +265,7 @@ namespace StringMix {
         /// </summary>
         /// <param name="input"></param>
         /// <param name="lexicon"></param>
-        public Mixer(string input, List<LexiconEntry> lexicon) : this(input, lexicon, new StringMixOptions()) { }
+        public MixPipeline(string input, List<LexiconEntry> lexicon) : this(input, lexicon, new StringMixOptions()) { }
 
         /// <summary>
         /// Constructor that will tokenize and tag the input string given lexicon and options. Shortcut for
@@ -257,14 +274,14 @@ namespace StringMix {
         /// <param name="input">The string to be tagged</param>
         /// <param name="lexicon">The list of expected tokens and their "tag" descriptors</param>
         /// <param name="options">Options for the Tagger/Tokenizer</param>
-        public Mixer(string input, List<LexiconEntry> lexicon, StringMixOptions options) : this(input, new Tagger(lexicon, options) ) { }
+        public MixPipeline(string input, List<LexiconEntry> lexicon, StringMixOptions options) : this(input, new Tagger(lexicon, options) ) { }
         
         /// <summary>
         /// Constructor that will tokenize a given string with the provided tagger.  A shortcut to new Mixer(Tagger).Tag(input);
         /// </summary>
         /// <param name="input"></param>
         /// <param name="tagger"></param>
-        public Mixer(string input, Tagger tagger): this(tagger.Tag(input)) {
+        public MixPipeline(string input, Tagger tagger): this(tagger.Tag(input)) {
             _tagger = tagger;
         }
 
@@ -274,7 +291,7 @@ namespace StringMix {
         /// <param name="lexicon">A list of lexicon entries that describe the expected tokens and 
         /// their "tag" descriptors
         /// </param>
-        public Mixer(List<LexiconEntry> lexicon) : this(lexicon, new StringMixOptions()) { }
+        public MixPipeline(List<LexiconEntry> lexicon) : this(lexicon, new StringMixOptions()) { }
 
         /// <summary>
         /// Constructor that will build up a new Mixer using the provided lexicon and options
@@ -285,13 +302,13 @@ namespace StringMix {
         /// <param name="options">An options object that controls the method by which input strings 
         /// will be tokenize and tagged
         /// </param>
-        public Mixer(List<LexiconEntry> lexicon, StringMixOptions options) : this(new Tagger(lexicon, options)) { }
+        public MixPipeline(List<LexiconEntry> lexicon, StringMixOptions options) : this(new Tagger(lexicon, options)) { }
         
         /// <summary>
         /// Constructor for cases when a tagger has already been pre-configured
         /// </summary>
         /// <param name="tagger">An already configured tagger</param>
-        public Mixer(Tagger tagger) {
+        public MixPipeline(Tagger tagger) {
             _tagger = tagger;
         }
 
@@ -299,7 +316,7 @@ namespace StringMix {
         /// Constructor accepting a list of TaggedTokens that were either constructed elsewhere or pre-processed
         /// </summary>
         /// <param name="tokens">List of Tagged Tokens</param>
-        public Mixer(List<TaggedToken> tokens) {
+        public MixPipeline(List<TaggedToken> tokens) {
             _tokens = tokens;
         }
 
@@ -333,16 +350,16 @@ namespace StringMix {
             return ret;
         }
 
-        // Method: With
+        // Method: Match
             // Takes: string for input
-            // Returns: Object onto which to call When() with the state of patterns and tokens made from the input string.
+            // Returns: Object onto which to call Match() with the state of patterns and tokens made from the input string.
         /// <summary>
         /// With()
         /// </summary>
         /// <param name="input">the string to be tokenized, tagged, patterned, and later processed</param>
         /// <returns>WithAnchor: an object from which the call chain can continue to Mix()</returns>
-        public WithAnchor With(string input) {
-            WithAnchor ret = new WithAnchor();
+        public Matcher With(string input) {
+            Matcher ret = new Matcher();
 
             ret.Tokens = _tokens = _tagger.Tag(input);
             ret.Patterns = PatternMaker.MakePatterns(_tokens);
@@ -355,8 +372,8 @@ namespace StringMix {
         /// </summary>
         /// <param name="tokens">a List<TaggedToken> </param>
         /// <returns>WithAnchor: an object from which the call chain can continue to Mix()</returns>
-        public WithAnchor With(List<TaggedToken> tokens) {
-            WithAnchor ret = new WithAnchor();
+        public Matcher With(List<TaggedToken> tokens) {
+            Matcher ret = new Matcher();
             ret.Tokens = tokens;
             ret.Patterns = PatternMaker.MakePatterns(_tokens);
             return ret;

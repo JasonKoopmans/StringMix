@@ -116,7 +116,7 @@ namespace StringMix.Test {
                 Tags = new List<string> { "L" } // For LastName
             });
 
-            Mixer m = new Mixer("Fred and Wilma Flintstone", lex);
+            MixPipeline m = new MixPipeline("Fred and Wilma Flintstone", lex);
 
             List<string> combos = m.CombineAll("F", "L", " "); 
             // Fred Flintstone
@@ -237,7 +237,7 @@ namespace StringMix.Test {
 
         [TestMethod]
         public void BasicMixerUse() {
-            Mixer m = new Mixer("Fred and Wilma Flintstone", GetBasicTagger(GetBasicNameLex()) );
+            MixPipeline m = new MixPipeline("Fred and Wilma Flintstone", GetBasicTagger(GetBasicNameLex()) );
             List<string> names = m.CombineAll("F", "L", " ");
 
             Assert.AreEqual(2, names.Count);
@@ -263,14 +263,14 @@ namespace StringMix.Test {
 
         [TestMethod]
         public void Basic_Mixer_RegexWhen_RegexExtractor() {
-            Mixer m = new Mixer(GetBasicTagger(GetBasicNameLex()));
+            MixPipeline m = new MixPipeline(GetBasicTagger(GetBasicNameLex()));
 
-            List<List<TaggedToken>> list = m.With("Fred and Wilma Flintstone")
-                .When(WhenCriteria.RegexCriteria("F?FL"))
+            List<Mix> list = m.With("Fred and Wilma Flintstone")
+                .Match(MatchCriteria.RegexCriteria("F?FL"))
                 .Mix(MixActions.RegexExtraction("FL")).Mixes;
 
             Assert.AreEqual(1, list.Count);
-            Assert.AreEqual("Wilma", list[0][0].Value);
+            Assert.AreEqual("Wilma", list[0].Tokens[0].Value);
         }
 
 
