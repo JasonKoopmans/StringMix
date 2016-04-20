@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace StringMix {
+namespace StringMix.Internal {
 
     /// <summary>
     /// Class whose purpose is to divide an input string into a list of component strings (tokens).

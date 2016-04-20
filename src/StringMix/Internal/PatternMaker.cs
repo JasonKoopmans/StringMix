@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace StringMix {
+namespace StringMix.Internal {
     public class PatternMaker {
 
         /// <summary>

@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using StringMix.Model;
 using System.Collections.Generic;
+using StringMix.Internal;
 
 namespace StringMix.Test {
     [TestClass]

@@ -39,11 +39,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Mixer.cs" />
+    <Compile Include="Internal\MatchCriteria.cs" />
+    <Compile Include="Internal\Matcher.cs" />
+    <Compile Include="Internal\MixActions.cs" />
+    <Compile Include="Internal\Mixer.cs" />
+    <Compile Include="Internal\Translator.cs" />
+    <Compile Include="MixPipeline.cs" />
+    <Compile Include="Model\Mix.cs" />
     <Compile Include="Model\StringMixOptions.cs" />
     <Compile Include="Model\TaggedToken.cs" />
-    <Compile Include="PatternMaker.cs" />
-    <Compile Include="Tagger.cs" />
+    <Compile Include="Internal\PatternMaker.cs" />
+    <Compile Include="Internal\Tagger.cs" />
     <Compile Include="Model\LexiconEntry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
