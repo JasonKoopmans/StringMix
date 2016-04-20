@@ -8,14 +8,38 @@ using System.Threading.Tasks;
 
 namespace StringMix {
 
+    /// <summary>
+    /// An interface that defines a method that needs to accept a List of List of TaggedTokens (that 
+    /// correspond to the patterns that were matched) that return a instance of type T.  Callers to the 
+    /// MixAnchor.Translate method can either pass in an object that implements this interface -or- a 
+    /// Func<List<List<TaggedToken>>, T
+    /// </summary>
+    /// <typeparam name="T">Generic Type that represents the type this class will return in its Translate method</typeparam>
     public interface ITranslator<T> where T: new() {
         T Translate(List<List<TaggedToken>> TokenListLists);
     }
 
+    /// <summary>
+    /// MixAnchor is a Method Chaining Anchor from which callers can perform actions on "Mixes" that are the 
+    /// matched lists of token lists that result from performing Mix() on an original list of tagged tokens and
+    /// a list of patterns that should be matched
+    /// </summary>
     public class MixAnchor {
         public MixAnchor() { }
+
+        /// <summary>
+        /// The list of Matched Lists of Tokens that resulted from a call to Mix().  This is the collection
+        /// of items that will translated
+        /// </summary>
         public List<List<TaggedToken>> Mixes = new List<List<TaggedToken>>();
 
+        /// <summary>
+        /// Translates a list of matched TokenLists an object of T type.  This offers a way for a caller to express
+        /// how these lists should be translated and allow the framework to do the work of translation.
+        /// </summary>
+        /// <typeparam name="T">The type that the function should return as a result of its processing of the matched TokenList</typeparam>
+        /// <param name="translator">a function that performs the translation</param>
+        /// <returns>An instance of T</returns>
         public T Translate<T>(Func< List<List<TaggedToken>>, T> translator)  where T: new() {
             if (Mixes.Count() == 0) {
                 return default(T);
@@ -24,22 +48,47 @@ namespace StringMix {
             }
         }
 
+        /// <summary>
+        /// An alternate to the Translate method that accepts a Func<> for those callers that would 
+        /// prefer to work with more permenant types rather that function delegates
+        /// </summary>
+        /// <typeparam name="T">The type that the function should return as a result of its processing of the matched TokenList</typeparam>
+        /// <param name="translator">a class implementing ITranslator<T> that performs the translation</param>
+        /// <returns>An instance of T</returns>
         public T Translate<T>(ITranslator<T> translator) where T : new() {
             return Translate(translator.Translate);
         }
 
     }
 
-
+    /// <summary>
+    /// WhenAchor is a method chaining anchor class from which callers can perform actions on sets of tokens 
+    /// that match a defined pattern.  It allows for an action to be expressed against the Tokens and the 
+    /// patterns that are matched.
+    /// </summary>
     public class WhenAnchor {
-        public List<TaggedToken> Tokens = new List<TaggedToken>();
-        public List<string> MatchedPatterns = new List<string>();
-        public static List<List<TaggedToken>> EmptyResult = new List<List<TaggedToken>>(0);
-
-        // Method: Mix
-        // Takes: Delegate that accepts tokens
-        // Returns: List<string>
         
+        /// <summary>
+        /// Tokens are the list of tokens that resulted from Tagging
+        /// </summary>
+        public List<TaggedToken> Tokens = new List<TaggedToken>();
+        
+        /// <summary>
+        /// MatchedPatterns are the pattern values that matched according to the lexicon in the Mixer (via Tagger)
+        /// </summary>
+        public List<string> MatchedPatterns = new List<string>();
+
+        /// <summary>
+        /// A static result to represent an empty set avoiding Null Reference Exceptions
+        /// </summary>
+        public static List<List<TaggedToken>> EmptyResult = new List<List<TaggedToken>>(0);
+        
+        /// <summary>
+        /// Mix is a method that allows a action to be expressed that turns the TaggedTokens and Patterns into a list of
+        /// Matched Pattern Results.  
+        /// </summary>
+        /// <param name="Action">Delegate (Func<>) that accepts a list of tagged tokens, a list of patterns, and returns a List of List of TaggedTokens</param>
+        /// <returns>List of List of TaggedTokens</returns>
         public MixAnchor Mix(Func<List<TaggedToken>, List<string>, List<List<TaggedToken>>> Action) {
             if (MatchedPatterns.Count() == 0) {
                 return new MixAnchor();
@@ -181,33 +230,83 @@ namespace StringMix {
     }
 
     public class Mixer {
-
+        /// <summary>
+        /// The list of tagged tokens that would result from tokenizing and tagging.  Either populated by Tag() or 
+        /// a constructor that calls Tag()
+        /// </summary>
         private List<TaggedToken> _tokens;
+
+        /// <summary>
+        /// The Tokenizer/Tagger that is getting used to break the input string into tokens and then label them
+        /// according to lexicon.
+        /// </summary>
         private Tagger _tagger;
 
-
+        /// <summary>
+        /// Constructor that will tokenize and tag the input string given lexicon and default options.  Shortcut for 
+        /// new Mixer(lexicon).Tag(input)
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="lexicon"></param>
         public Mixer(string input, List<LexiconEntry> lexicon) : this(input, lexicon, new StringMixOptions()) { }
 
+        /// <summary>
+        /// Constructor that will tokenize and tag the input string given lexicon and options. Shortcut for
+        /// new Mixer(lexicon, options).Tag(input)
+        /// </summary>
+        /// <param name="input">The string to be tagged</param>
+        /// <param name="lexicon">The list of expected tokens and their "tag" descriptors</param>
+        /// <param name="options">Options for the Tagger/Tokenizer</param>
         public Mixer(string input, List<LexiconEntry> lexicon, StringMixOptions options) : this(input, new Tagger(lexicon, options) ) { }
         
+        /// <summary>
+        /// Constructor that will tokenize a given string with the provided tagger.  A shortcut to new Mixer(Tagger).Tag(input);
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="tagger"></param>
         public Mixer(string input, Tagger tagger): this(tagger.Tag(input)) {
             _tagger = tagger;
         }
 
+        /// <summary>
+        /// Constructor that will build up a Mixer accepting the provided lexicon and default Options
+        /// </summary>
+        /// <param name="lexicon">A list of lexicon entries that describe the expected tokens and 
+        /// their "tag" descriptors
+        /// </param>
         public Mixer(List<LexiconEntry> lexicon) : this(lexicon, new StringMixOptions()) { }
 
+        /// <summary>
+        /// Constructor that will build up a new Mixer using the provided lexicon and options
+        /// </summary>
+        /// <param name="lexicon">A list of lexicon entries that describe the expected tokens and 
+        /// their "tag" descriptors
+        /// </param>
+        /// <param name="options">An options object that controls the method by which input strings 
+        /// will be tokenize and tagged
+        /// </param>
         public Mixer(List<LexiconEntry> lexicon, StringMixOptions options) : this(new Tagger(lexicon, options)) { }
         
-
+        /// <summary>
+        /// Constructor for cases when a tagger has already been pre-configured
+        /// </summary>
+        /// <param name="tagger">An already configured tagger</param>
         public Mixer(Tagger tagger) {
             _tagger = tagger;
         }
 
-
+        /// <summary>
+        /// Constructor accepting a list of TaggedTokens that were either constructed elsewhere or pre-processed
+        /// </summary>
+        /// <param name="tokens">List of Tagged Tokens</param>
         public Mixer(List<TaggedToken> tokens) {
             _tokens = tokens;
         }
 
+        /// <summary>
+        /// Tag() provides a simple method to process a string and internally store the tagged tokens
+        /// </summary>
+        /// <param name="input"></param>
         public void Tag(string input) {
             if (_tagger == null) {
                 throw new InvalidOperationException("There is no tagger defined for this mixer.  Please choose a different constructor if you wish to Tag() with this mixer.");
@@ -215,6 +314,14 @@ namespace StringMix {
             _tokens = _tagger.Tag(input);
         }
 
+        /// <summary>
+        /// CombineAll() is a method for simple mixing allowing for all of the instances of tagname1
+        /// to be combined with all of the instances of tagname2, using separator as a string to join them
+        /// </summary>
+        /// <param name="tagname1">the tagname that should appear first in all returned combinations</param>
+        /// <param name="tagname2">the tagname that should appear second in all returned combinations</param>
+        /// <param name="separator">the string that should be placed between the tokens in each of the combinations</param>
+        /// <returns></returns>
         public List<string> CombineAll(string tagname1, string tagname2, string separator) {
             List<string> ret = new List<string>();
 
@@ -229,6 +336,11 @@ namespace StringMix {
         // Method: With
             // Takes: string for input
             // Returns: Object onto which to call When() with the state of patterns and tokens made from the input string.
+        /// <summary>
+        /// With()
+        /// </summary>
+        /// <param name="input">the string to be tokenized, tagged, patterned, and later processed</param>
+        /// <returns>WithAnchor: an object from which the call chain can continue to Mix()</returns>
         public WithAnchor With(string input) {
             WithAnchor ret = new WithAnchor();
 
