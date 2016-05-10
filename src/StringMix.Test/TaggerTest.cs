@@ -6,6 +6,14 @@ using StringMix.Internal;
 
 namespace StringMix.Test {
     [TestClass]
+
+
+    public class Name {
+        public string First;
+        public string Middle;
+        public string Last;
+    }
+    
     public class TaggerTest {
         
         /* 
@@ -316,6 +324,92 @@ namespace StringMix.Test {
             Assert.AreEqual("Wilma", list[1].Tokens[0].Value);
         }
 
+        [TestMethod]
+        public void TranslateToNameObject_ListToList() {
+            
+            // Setup the pipeline
+            MixPipeline m = new MixPipeline(GetBasicTagger(GetBasicNameLex()));
+            
+            // Process this string
+            List<Name> list = m.With("Fred Franklin Flintstone Wilma Jean Flintstone")
+                
+                // Match Patterns where FML exists in the list of tokens, make mixes of all of the FML matches
+                // This single string would contain 2 FML sets
+                .RegexMatchAndMix("FML")
+                
+                // With the Mixes, translate them to Names.  t's type is List<Mix>
+                .Translate<List<Name>>(t => {
+                    
+                    // collection type to capture tranlations
+                    List<Name> names = new List<Name>();
+
+                    // visit each mix, creating a new Name for each one.
+                    foreach (var mix in t) {
+                        var name = new Name();
+                        name.First = mix.Tokens[0].Value;
+                        name.Middle = mix.Tokens[1].Value;
+                        name.Last = mix.Tokens[2].Value;
+                        names.Add(name);
+                    }
+                    return names;
+                });
+
+            /* List = 
+             * [0] => First:Fred,Middle:Franklin,Last:Flintstone
+             * [1] => First:Wilma,Middle:Jean,Last:Flintstone
+            */ 
+            Assert.IsNotNull(list);
+            Assert.AreEqual(2, list.Count);
+            Assert.AreEqual("Fred", list[0].First);
+            Assert.AreEqual("Franklin", list[0].Middle);
+            Assert.AreEqual("Flintstone", list[0].Last);
+
+            Assert.AreEqual("Wilma", list[0].First);
+            Assert.AreEqual("Jean", list[0].Middle);
+            Assert.AreEqual("Flintstone", list[0].Last);
+
+        }
+
+        [TestMethod]
+        public void TranslateToNameObject_OneToOne() {
+
+            // Setup the pipeline
+            MixPipeline m = new MixPipeline(GetBasicTagger(GetBasicNameLex()));
+
+            // Process this string
+            List<Name> list = m.With("Fred Franklin Flintstone Wilma Jean Flintstone")
+
+                // Match Patterns where FML exists in the list of tokens, make mixes of all of the FML matches
+                // This single string would contain 2 FML sets
+                .RegexMatchAndMix("FML")
+
+                // define a translation from a single mix to a single name.  The framework worries about accumulating
+                .Translate<Name>(mix => {
+                    
+                    var name = new Name();
+                    name.First = mix.Tokens[0].Value;
+                    name.Middle = mix.Tokens[1].Value;
+                    name.Last = mix.Tokens[2].Value;
+                    return name;
+                });
+
+            /* List = 
+             * [0] => First:Fred,Middle:Franklin,Last:Flintstone
+             * [1] => First:Wilma,Middle:Jean,Last:Flintstone
+            */
+            Assert.IsNotNull(list);
+            Assert.AreEqual(2, list.Count);
+            Assert.AreEqual("Fred", list[0].First);
+            Assert.AreEqual("Franklin", list[0].Middle);
+            Assert.AreEqual("Flintstone", list[0].Last);
+
+            Assert.AreEqual("Wilma", list[0].First);
+            Assert.AreEqual("Jean", list[0].Middle);
+            Assert.AreEqual("Flintstone", list[0].Last);
+
+        }
+
+        
 
     }
 }
