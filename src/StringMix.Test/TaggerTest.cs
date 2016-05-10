@@ -30,6 +30,16 @@ namespace StringMix.Test {
             });
 
             ret.Add(new LexiconEntry() {
+                Value = "Franklin",
+                Tags = new List<string> { "F", "M" }
+            });
+            
+            ret.Add(new LexiconEntry() {
+                Value = "Jean",
+                Tags = new List<string> { "F", "M" }
+            });
+
+            ret.Add(new LexiconEntry() {
                 Value = "Wilma",
                 Tags = new List<string> { "F" }
             });
@@ -270,8 +280,40 @@ namespace StringMix.Test {
                 .Match(MatchCriteria.RegexCriteria("F?FL"))
                 .Mix(MixActions.RegexExtraction("FL")).Mixes;
 
+            
+
             Assert.AreEqual(1, list.Count);
             Assert.AreEqual("Wilma", list[0].Tokens[0].Value);
+        }
+
+        [TestMethod]
+        public void Basic_Mixer_RegexMatch_RegexExtractor_Simple() {
+            MixPipeline m = new MixPipeline(GetBasicTagger(GetBasicNameLex()));
+
+            List<Mix> list = m.With("Fred Flintstone Wilma Flintstone")
+                .Match(MatchCriteria.RegexCriteria("FLFL"))
+                .Mix(MixActions.RegexExtraction("FL")).Mixes;
+
+
+
+            Assert.AreEqual(2, list.Count);
+            Assert.AreEqual("Fred", list[0].Tokens[0].Value);
+            Assert.AreEqual("Wilma", list[1].Tokens[0].Value);
+        }
+
+        [TestMethod]
+        public void Basic_Mixer_RegexMatch_RegexExtractor_Multiple() {
+            MixPipeline m = new MixPipeline(GetBasicTagger(GetBasicNameLex()));
+
+            List<Mix> list = m.With("Fred Franklin Flintstone Wilma Jean Flintstone")
+                .Match(MatchCriteria.RegexCriteria("FMLFML"))
+                .Mix(MixActions.RegexExtraction("FML")).Mixes;
+
+
+
+            Assert.AreEqual(2, list.Count);
+            Assert.AreEqual("Fred", list[0].Tokens[0].Value);
+            Assert.AreEqual("Wilma", list[1].Tokens[0].Value);
         }
 
 
