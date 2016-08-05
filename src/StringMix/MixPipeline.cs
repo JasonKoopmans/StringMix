@@ -113,11 +113,11 @@ namespace StringMix {
         }
 
         /// <summary>
-        /// With()
+        /// Process()
         /// </summary>
         /// <param name="input">the string to be tokenized, tagged, patterned, and later processed</param>
-        /// <returns>WithAnchor: an object from which the call chain can continue to Mix()</returns>
-        public Matcher With(string input) {
+        /// <returns>Matcher: an object from which the call chain can continue to Mix()</returns>
+        public Matcher Process(string input) {
             Matcher ret = new Matcher();
 
             ret.Tokens = _tokens = _tagger.Tag(input);
@@ -127,11 +127,11 @@ namespace StringMix {
         }
 
         /// <summary>
-        /// With() Convenience method that would allow for further processing (Mix/Translate) though tagging is not needed.
+        /// Process() Convenience method that would allow for further processing (Mix/Translate) though tagging is not needed.
         /// </summary>
         /// <param name="tokens">a List<TaggedToken> </param>
-        /// <returns>WithAnchor: an object from which the call chain can continue to Mix()</returns>
-        public Matcher With(List<TaggedToken> tokens) {
+        /// <returns>Matcher: an object from which the call chain can continue to Mix()</returns>
+        public Matcher Process(List<TaggedToken> tokens) {
             Matcher ret = new Matcher();
             ret.Tokens = tokens;
             ret.Patterns = PatternMaker.MakePatterns(_tokens);

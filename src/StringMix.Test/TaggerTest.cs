@@ -135,9 +135,9 @@ namespace StringMix.Test {
                 Tags = new List<string> { "L" } // For LastName
             });
 
-            MixPipeline m = new MixPipeline("Fred and Wilma Flintstone", lex);
+            MixPipeline pipe = new MixPipeline("Fred and Wilma Flintstone", lex);
 
-            List<string> combos = m.CombineAll("F", "L", " "); 
+            List<string> combos = pipe.CombineAll("F", "L", " "); 
             // Fred Flintstone
             // Wilma Flintstone
 
@@ -256,8 +256,8 @@ namespace StringMix.Test {
 
         [TestMethod]
         public void BasicMixerUse() {
-            MixPipeline m = new MixPipeline("Fred and Wilma Flintstone", GetBasicTagger(GetBasicNameLex()) );
-            List<string> names = m.CombineAll("F", "L", " ");
+            MixPipeline pipe = new MixPipeline("Fred and Wilma Flintstone", GetBasicTagger(GetBasicNameLex()) );
+            List<string> names = pipe.CombineAll("F", "L", " ");
 
             Assert.AreEqual(2, names.Count);
             Assert.AreEqual("Fred Flintstone", names[0]);
@@ -282,9 +282,9 @@ namespace StringMix.Test {
 
         [TestMethod]
         public void Basic_Mixer_RegexWhen_RegexExtractor() {
-            MixPipeline m = new MixPipeline(GetBasicTagger(GetBasicNameLex()));
+            MixPipeline pipe = new MixPipeline(GetBasicTagger(GetBasicNameLex()));
 
-            List<Mix> list = m.With("Fred and Wilma Flintstone")
+            List<Mix> list = pipe.Process("Fred and Wilma Flintstone")
                 .Match(MatchCriteria.RegexCriteria("F?FL"))
                 .Mix(MixActions.RegexExtraction("FL")).Mixes;
 
@@ -296,9 +296,9 @@ namespace StringMix.Test {
 
         [TestMethod]
         public void Basic_Mixer_RegexMatch_RegexExtractor_Simple() {
-            MixPipeline m = new MixPipeline(GetBasicTagger(GetBasicNameLex()));
+            MixPipeline pipe = new MixPipeline(GetBasicTagger(GetBasicNameLex()));
 
-            List<Mix> list = m.With("Fred Flintstone Wilma Flintstone")
+            List<Mix> list = pipe.Process("Fred Flintstone Wilma Flintstone")
                 .Match(MatchCriteria.RegexCriteria("FLFL"))
                 .Mix(MixActions.RegexExtraction("FL")).Mixes;
 
@@ -311,9 +311,9 @@ namespace StringMix.Test {
 
         [TestMethod]
         public void Basic_Mixer_RegexMatch_RegexExtractor_Multiple() {
-            MixPipeline m = new MixPipeline(GetBasicTagger(GetBasicNameLex()));
+            MixPipeline pipe = new MixPipeline(GetBasicTagger(GetBasicNameLex()));
 
-            List<Mix> list = m.With("Fred Franklin Flintstone Wilma Jean Flintstone")
+            List<Mix> list = pipe.Process("Fred Franklin Flintstone Wilma Jean Flintstone")
                 .Match(MatchCriteria.RegexCriteria("FMLFML"))
                 .Mix(MixActions.RegexExtraction("FML")).Mixes;
 
@@ -328,10 +328,10 @@ namespace StringMix.Test {
         public void TranslateToNameObject_ListToList() {
             
             // Setup the pipeline
-            MixPipeline m = new MixPipeline(GetBasicTagger(GetBasicNameLex()));
+            MixPipeline pipe = new MixPipeline(GetBasicTagger(GetBasicNameLex()));
             
             // Process this string
-            List<Name> list = m.With("Fred Franklin Flintstone Wilma Jean Flintstone")
+            List<Name> list = pipe.Process("Fred Franklin Flintstone Wilma Jean Flintstone")
                 
                 // Match Patterns where FML exists in the list of tokens, make mixes of all of the FML matches
                 // This single string would contain 2 FML sets
@@ -374,10 +374,10 @@ namespace StringMix.Test {
         public void TranslateToNameObject_OneToOne() {
 
             // Setup the pipeline
-            MixPipeline m = new MixPipeline(GetBasicTagger(GetBasicNameLex()));
+            MixPipeline pipe = new MixPipeline(GetBasicTagger(GetBasicNameLex()));
 
             // Process this string
-            List<Name> list = m.With("Fred Franklin Flintstone Wilma Jean Flintstone")
+            List<Name> list = pipe.Process("Fred Franklin Flintstone Wilma Jean Flintstone")
 
                 // Match Patterns where FML exists in the list of tokens, make mixes of all of the FML matches
                 // This single string would contain 2 FML sets

@@ -123,9 +123,9 @@ processing needs they may have.
 
     
         // Make a MixPipeline
-        MixPipeline m = new MixPipeline(GetBasicTagger(GetBasicNameLex()));
+        MixPipeline pipe = new MixPipeline(GetBasicTagger(GetBasicNameLex()));
 
-        List<Mix> list = m.With("Fred Flintstone Wilma Flintstone") // The String to process
+        List<Mix> list = pipe.Process("Fred Flintstone Wilma Flintstone") // The String to process
             // the pattern to match
             .Match(MatchCriteria.RegexCriteria("^FLFL$")) 
             // In each match, extract tokens matching this pattern
