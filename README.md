@@ -22,7 +22,8 @@ specialized tokenizer is desired, that component can be created outside the libr
 
 ### Why:
 
-To parse, catagorize, and transform relatively small strings
+To parse, catagorize, and transform relatively small strings.
+
 Consider inputs like:
 
 - Fred Flintstone
@@ -39,16 +40,16 @@ class.
 
 ### Terms:
 
-- Tokenizing: The process of mechanically separating an imput string into its component parts
-- Token: In most tokenizing schemes (including the default for this library) its roughly analogous
+- **Tokenizing**: The process of mechanically separating an imput string into its component parts
+- **Token**: In most tokenizing schemes (including the default for this library) its roughly analogous
 to a word
-- `LexiconEntry`: An identification of expected input and the tags that should be 
+- **`LexiconEntry`**: An identification of expected input and the tags that should be 
 applied to it if found.  Ex: Fred, F [For First Name].  Each lexicon entry can 
 define more than one tag that could apply.  In the case of processing names, "Thomas"
 could be either a first or last name.  Both "F" and "L" tags could be applied.
-- Lexicon: A collection of Lexicon Entries.  Together, describing all of the expected
+- **Lexicon**: A collection of Lexicon Entries.  Together, describing all of the expected
 values that tokens could be an what their meaning is/could be
-- Tag: A placeholder for a token in a pattern, a simple descriptor for that 
+- **Tag**: A placeholder for a token in a pattern, a simple descriptor for that 
 token in the collection of tokens.  Determining what tags get applied to what tokens 
 is controlled by the lexicon.  Once a string is tokenized, a PatternMaker component 
 is responsible for walking over each of the tokens and attempting to match each of 
@@ -56,16 +57,16 @@ the tokens to an entry in the lexicon.  When a token matches, the tag(s) from th
 lexicon are applied to the patterns already identified.  Since lexicon entries can 
 have more than one tag assigned, a single input string might have several different 
 patterns that apply.
-- Pattern: A collection of tags that represent the meaning or type of the 
+- **Pattern**: A collection of tags that represent the meaning or type of the 
 token represented in the original input string.  Patterns are a way to summarize 
 this meaning and allow for tokens of a type or meaning to be selected, rearranged, or 
 processed in a meaningful way
-- Patterns: In cases where the lexicon contains entries that have more than one tag 
+- **Patterns**: In cases where the lexicon contains entries that have more than one tag 
 assigned, it is possible for a single input string to result in Lists of tokens that 
 are summarized by more than one pattern.  Consider a lexicon that tags "Sarah" 
 with "F" and "Thomas" with "F" and "L". Also consider the input of "Sarah Thomas"
 The patterns that would summarize this input would be "FF" and "FL"
-- Mix: A version or subset of the original list of tokens that represent the input string.
+- **Mix**: A version or subset of the original list of tokens that represent the input string.
 A mix can be the original set of tokens.  An example where Mixes are useful is when 
 the match criteria is focused on looking for the presence of a last name, the Mix 
 action could focus on something different, like extracting the first names on 
@@ -121,19 +122,24 @@ processing needs they may have.
             Tags = new List<string> { "L" } // For LastName
         });
 
-    
+        // Configure a Tagger with the lexicon
+        Tagger tagger = new Tagger(lex);
+        
         // Make a MixPipeline
-        MixPipeline pipe = new MixPipeline(GetBasicTagger(GetBasicNameLex()));
+        MixPipeline pipe = new MixPipeline(tagger);
 
         List<Mix> list = pipe.Process("Fred Flintstone Wilma Flintstone") // The String to process
-            // the pattern to match
+            // the pattern to match, in this case two First and Last name pairs
             .Match(MatchCriteria.RegexCriteria("^FLFL$")) 
-            // In each match, extract tokens matching this pattern
+            // In each match, extract tokens matching this pattern.  
+            // Here collect make an occurance for each first and last name pair
             .Mix(MixActions.RegexExtraction("FL")) 
             // The list of "Mixed" results
             .Mixes;
 
+
         /*
+        : Results :
         list[0] = {Fred, Flintstone};
         list[1] = {Wilma, Flintstone}
         */
