@@ -28,7 +28,7 @@ namespace StringMix.Internal {
         /// <summary>
         /// A static result to represent an empty set avoiding Null Reference Exceptions
         /// </summary>
-        public static List<List<TaggedToken>> EmptyResult = new List<List<TaggedToken>>(0);
+        protected static List<List<TaggedToken>> EmptyResult = new List<List<TaggedToken>>(0);
 
         /// <summary>
         /// Mix is a method that allows a action to be expressed that turns the TaggedTokens and Patterns into a list of
