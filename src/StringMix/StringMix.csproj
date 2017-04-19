@@ -41,17 +41,10 @@
   <ItemGroup>
     <Compile Include="Extensions.cs" />
     <Compile Include="Internal\IMatcher.cs" />
-    <Compile Include="Internal\IMixer.cs" />
     <Compile Include="Internal\MatchCriteria.cs" />
     <Compile Include="Internal\Matcher.cs" />
-    <Compile Include="Internal\MixActions.cs" />
-    <Compile Include="Internal\Mixer.cs" />
     <Compile Include="Internal\ITransformer.cs" />
-    <Compile Include="Internal\Translator.cs" />
-    <Compile Include="MixPipeline.cs" />
     <Compile Include="Model\MatchSet.cs" />
-    <Compile Include="Model\Mix.cs" />
-    <Compile Include="Model\MixSet.cs" />
     <Compile Include="Model\Pattern.cs" />
     <Compile Include="Model\StringMixOptions.cs" />
     <Compile Include="Model\TaggedToken.cs" />

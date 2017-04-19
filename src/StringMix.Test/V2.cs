@@ -115,10 +115,10 @@ namespace StringMix.Test
 
             string regex = @"^F&FL$";
 
-            var mixset = tokens.Match(regex).Mix(regex);
+            var matchset = tokens.Match(regex);
 
-            Assert.IsNotNull(mixset);
-            Assert.IsTrue(mixset.Mixes.Count == 1);
+            Assert.IsNotNull(matchset);
+            Assert.IsTrue(matchset.MatchedPatterns.Count == 1);
 
 
         }

@@ -20,7 +20,7 @@ namespace StringMix.Internal
         public MatchSet Match(List<TaggedToken> tokens)
         {
             MatchSet ret = new MatchSet();
-            List<Pattern> candidates = PatternMaker.MakePatterns_v2(tokens);
+            List<Pattern> candidates = PatternMaker.MakePatterns(tokens);
 
             ret.Tokens = tokens;
             // Iterate over the patterns, return true if one matches

@@ -20,13 +20,7 @@ namespace StringMix.Internal {
         /// have more than one pattern in cases where any of the matched tokens are tagged with 
         /// more than one tag.  "Thomas" > First and/or Last Name "F" and "L" Tag
         /// </returns>
-        public static List<string> MakePatterns(List<TaggedToken> tokens)
-        {
-            return internalMakePatterns(tokens, new List<string>(), 0);
-        }
-        
-
-        public static List<Pattern> MakePatterns_v2(List<TaggedToken> tokens) {
+        public static List<Pattern> MakePatterns(List<TaggedToken> tokens) {
             List<string> intermediatePatterns =  internalMakePatterns(tokens, new List<string>(), 0);
             List<Pattern> ret = new List<Pattern>(intermediatePatterns.Count());
             intermediatePatterns.ForEach( x => ret.Add(new Pattern(x)));

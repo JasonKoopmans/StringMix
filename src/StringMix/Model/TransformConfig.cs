@@ -10,7 +10,6 @@ namespace StringMix.Model
     public class TransformConfig<T> where T: new()
     {
         public MatchCriteria  MatchCriteria { get; set; }
-        public MixActions MixAction { get; set; }
-        public ITranslator<T> Translator { get; set; }
+        public ITransformer<T> Transformer { get; set; }
     }
 }

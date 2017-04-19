@@ -35,28 +35,27 @@ namespace StringMix
         {
             return matcher.Match(tokens);
         }
+ 
 
-        public static MixSet Mix(this MatchSet matches, string RegexPattern )
+        public static T Transform<T>(this MatchSet matches, Func<MatchSet, T> function)
         {
-            IMixer mixer = new RegexExtractionMixer() { Expression = RegexPattern };
-            return Mix(matches, mixer);
+            if (matches.MatchedPatterns.Count() == 0)
+            {
+                return default(T);
+            }
+
+            return function.Invoke(matches);
         }
 
-        public static MixSet Mix(this MatchSet matches, IMixer mixer)
+        public static T Transform<T>(this MatchSet matches, ITransformer<T> transformer) where T: new()
         {
-            return mixer.Mix(matches);
-        } 
-
-        public static T Transform<T>(this MixSet Mixes, ITransformer<T> transformer) where T: new()
-        {
-            return transformer.Transform(Mixes);
+            return transformer.Transform(matches);
         }
 
-        public static T Transform<T>(this String str, List<LexiconEntry> lexicon, string MatchRegEx, string MixRegEx, ITransformer<T> transformer) where T : new()
+        public static T Transform<T>(this String str, List<LexiconEntry> lexicon, string MatchRegEx, ITransformer<T> transformer) where T : new()
         {
             return Tokenize(str, lexicon)
                 .Match(MatchRegEx)
-                .Mix(MixRegEx)
                 .Transform<T>(transformer);
         }
 
