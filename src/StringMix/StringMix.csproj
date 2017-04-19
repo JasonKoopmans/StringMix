@@ -41,8 +41,6 @@
   <ItemGroup>
     <Compile Include="Extensions.cs" />
     <Compile Include="Internal\IMatcher.cs" />
-    <Compile Include="Internal\MatchCriteria.cs" />
-    <Compile Include="Internal\Matcher.cs" />
     <Compile Include="Internal\ITransformer.cs" />
     <Compile Include="Model\MatchSet.cs" />
     <Compile Include="Model\Pattern.cs" />
