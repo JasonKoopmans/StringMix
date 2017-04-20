@@ -42,6 +42,8 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="Internal\IMatcher.cs" />
     <Compile Include="Internal\ITransformer.cs" />
+    <Compile Include="Internal\RegexMatcher.cs" />
+    <Compile Include="Internal\Transformer.cs" />
     <Compile Include="Model\MatchSet.cs" />
     <Compile Include="Model\Pattern.cs" />
     <Compile Include="Model\StringMixOptions.cs" />
