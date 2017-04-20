@@ -7,10 +7,11 @@ using System.Threading.Tasks;
 namespace StringMix.Model
 {
     /// <summary>
-    /// Using Mixer callers can perform actions on sets of tokens that match a defined pattern.  
-    /// In some cases this could be redundant to what happens in Match().  It does allow for cases
-    /// where matching a larger string in Match() provides an opportunity to further refine or map
-    /// the tagged tokens into a different list of Mixes.  
+    /// A MatchSet is the result of a call to IMatcher.Match(List<TaggedToken>).  It provides a list of the 
+    /// tokens that were originally provided to the Matcher, and also a set of patterns that were matched according
+    /// to the behavior in the Matcher that was called.  From a MatchSet, the list of patterns could be interesting 
+    /// to inspect.  An extension method also exists so that holders of this object can Transform this object into 
+    /// any other object by using an implementation of ITransformer<T>
     /// </summary>
     public class MatchSet
     {
@@ -21,7 +22,8 @@ namespace StringMix.Model
     public List<TaggedToken> Tokens = new List<TaggedToken>();
 
     /// <summary>
-    /// MatchedPatterns are the pattern values that matched according to the lexicon in the Mixer (via Tagger)
+    /// MatchedPatterns are the pattern values that matched according to the lexicon and the expression 
+    /// offered to the Matcher
     /// </summary>
     public List<Pattern> MatchedPatterns = new List<Pattern>();
         
