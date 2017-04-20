@@ -24,12 +24,7 @@ namespace StringMix.Model
     /// MatchedPatterns are the pattern values that matched according to the lexicon in the Mixer (via Tagger)
     /// </summary>
     public List<Pattern> MatchedPatterns = new List<Pattern>();
-
-    /// <summary>
-    /// A static result to represent an empty set avoiding Null Reference Exceptions
-    /// </summary>
-    protected static List<List<TaggedToken>> EmptyResult = new List<List<TaggedToken>>(0);
-
+        
     
     }
 }
