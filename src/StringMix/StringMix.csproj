@@ -49,7 +49,6 @@
     <Compile Include="Internal\PatternMaker.cs" />
     <Compile Include="Internal\Tagger.cs" />
     <Compile Include="Model\LexiconEntry.cs" />
-    <Compile Include="Model\TransformConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />
