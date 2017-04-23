@@ -15,6 +15,8 @@ namespace StringMix.Internal
     public class RegexMatcher : IMatcher
     {
         public string Expression { get; set; }
+        public RegexOptions Options { get; set; } = RegexOptions.None;
+        public TimeSpan RegExTimeout { get; set; } = new TimeSpan(0, 0, 5); // 5 Seconds
 
         public MatchSet Match(List<TaggedToken> tokens)
         {
@@ -27,7 +29,7 @@ namespace StringMix.Internal
             
             // Use a LINQ .Where() to filter the list of patterns down to only those that 
             // successfully match the Expression provided.
-            ret.MatchedPatterns = candidates.Where(x => Regex.IsMatch(x.PatternText, Expression)).ToList();
+            ret.MatchedPatterns = candidates.Where(x => Regex.IsMatch(x.PatternText, Expression, this.Options, this.RegExTimeout)).ToList();
 
             return ret;
         }
