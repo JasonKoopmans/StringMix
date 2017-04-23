@@ -21,6 +21,11 @@ namespace StringMix.Internal {
         /// more than one tag.  "Thomas" > First and/or Last Name "F" and "L" Tag
         /// </returns>
         public static List<Pattern> MakePatterns(List<TaggedToken> tokens) {
+            if (tokens == null)
+            {
+                throw new ArgumentNullException("tokens");
+            }
+
             List<string> intermediatePatterns =  internalMakePatterns(tokens, new List<string>(), 0);
             List<Pattern> ret = new List<Pattern>(intermediatePatterns.Count());
             intermediatePatterns.ForEach( x => ret.Add(new Pattern(x)));
@@ -45,6 +50,22 @@ namespace StringMix.Internal {
         /// eventually returns the complete set of patterns that the list of tokens can be represented by.
         /// </returns>
         private static List<string> internalMakePatterns(List<TaggedToken> tokens, IList<string> patterns, int targetToken) {
+            if (tokens == null)
+            {
+                throw new ArgumentNullException("tokens");
+            }
+
+            if (patterns == null)
+            {
+                throw new ArgumentNullException("patterns");
+            }
+
+            if (targetToken < 0 || targetToken > tokens.Count)
+            {
+                new ArgumentOutOfRangeException("targetToken", 
+                    String.Format("targetToken needs to greater than 0 and less than the number of tokens.  Value was : {0}"));
+            }
+
             TaggedToken t = tokens[targetToken];
             List<string> newList = new List<string>();
 

@@ -1,4 +1,5 @@
 ﻿using StringMix.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -20,6 +21,16 @@ namespace StringMix.Internal
 
         public MatchSet Match(List<TaggedToken> tokens)
         {
+            if (string.IsNullOrEmpty(this.Expression))
+            {
+                throw new ArgumentNullException("Expression", "The Expression for this matcher is empty or null");
+            }
+
+            if (tokens == null)
+            {
+                throw new ArgumentNullException("tokens");
+            }
+
             MatchSet ret = new MatchSet();
             List<Pattern> candidates = PatternMaker.MakePatterns(tokens);
             

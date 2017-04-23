@@ -7,6 +7,29 @@ using StringMix.Internal;
 
 namespace StringMix.Test
 {
+    public class NaiveNameTransformer : ITransformer<List<Name>>
+    {
+        public List<Name> Transform(MatchSet set)
+        {
+            var ret = new List<Name>();
+            var name = new Name();
+
+            name.First = set.Tokens[0].Value;
+            name.Last = set.Tokens[1].Value;
+
+            ret.Add(name);
+
+            name = new Name();
+
+            name.First = set.Tokens[2].Value;
+            name.Last = set.Tokens[3].Value;
+
+            ret.Add(name);
+
+            return ret;
+        }
+    }
+
     [TestClass]
     public class SomethingCompletelyDifferent
     {
@@ -103,7 +126,15 @@ namespace StringMix.Test
         }
 
         [TestMethod]
-        public void Mix()
+        public void TryItOutEmptyString()
+        {
+            var tokens = "".Tokenize(GetBasicNameLex());
+            Assert.IsNotNull(tokens);
+            Assert.IsTrue(tokens.Count == 0);
+        }
+
+        [TestMethod]
+        public void Match()
         {
             var tokens = "Fred and Wilma Flintstone".Tokenize(GetBasicNameLex());
 
@@ -122,5 +153,95 @@ namespace StringMix.Test
 
 
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void MatchRegexIsEmptyString()
+        {
+            var tokens = "Fred and Wilma Flintstone".Tokenize(GetBasicNameLex());
+
+            Assert.IsNotNull(tokens);
+            Assert.IsTrue(tokens.Count == 4);
+            Assert.IsTrue(tokens[0].Tags.Contains("F"));
+            Assert.IsTrue(tokens[2].Tags.Contains("F"));
+            Assert.IsTrue(tokens[3].Tags.Contains("L"));
+
+            string regex = @"";
+
+            var matchset = tokens.Match(regex);
+
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void MatchRegexIsNull()
+        {
+            var tokens = "Fred and Wilma Flintstone".Tokenize(GetBasicNameLex());
+
+            Assert.IsNotNull(tokens);
+            Assert.IsTrue(tokens.Count == 4);
+            Assert.IsTrue(tokens[0].Tags.Contains("F"));
+            Assert.IsTrue(tokens[2].Tags.Contains("F"));
+            Assert.IsTrue(tokens[3].Tags.Contains("L"));
+
+            string regex = null;
+
+            var matchset = tokens.Match(regex);
+
+        }
+
+        [TestMethod]
+        public void Transform()
+        {
+            List<Name> names= "Fred and Wilma Flintstone".Transform(GetBasicNameLex(), "^FLFL$", new NaiveNameTransformer());
+
+            Assert.IsNotNull(names);
+            Assert.IsTrue(names.Count == 2);
+            Assert.IsTrue(names[0].First == "Fred");
+            Assert.IsTrue(names[1].First == "Wilma");
+
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void TransformLexIsNull()
+        {
+            List<Name> names = "Fred and Wilma Flintstone".Transform(null, "^FLFL$", new NaiveNameTransformer());
+
+            Assert.IsNotNull(names);
+            Assert.IsTrue(names.Count == 2);
+            Assert.IsTrue(names[0].First == "Fred");
+            Assert.IsTrue(names[1].First == "Wilma");
+
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void TransformMatchRegExIsNull()
+        {
+            List<Name> names = "Fred and Wilma Flintstone".Transform(GetBasicNameLex(), null, new NaiveNameTransformer());
+
+            Assert.IsNotNull(names);
+            Assert.IsTrue(names.Count == 2);
+            Assert.IsTrue(names[0].First == "Fred");
+            Assert.IsTrue(names[1].First == "Wilma");
+
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void TransformMatchRegExIsEmptyString()
+        {
+            List<Name> names = "Fred and Wilma Flintstone".Transform(GetBasicNameLex(), String.Empty, new NaiveNameTransformer());
+
+            Assert.IsNotNull(names);
+            Assert.IsTrue(names.Count == 2);
+            Assert.IsTrue(names[0].First == "Fred");
+            Assert.IsTrue(names[1].First == "Wilma");
+
+        }
+
+
+
     }
 }
