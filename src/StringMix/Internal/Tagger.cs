@@ -20,6 +20,12 @@ namespace StringMix.Internal {
         public Tagger(IList<LexiconEntry> lexicon) : this(lexicon, new StringMixOptions()) { }
 
         public Tagger(IList<LexiconEntry> lexicon, StringMixOptions options) {
+
+            if (lexicon == null)
+            {
+                throw new ArgumentNullException("lexicon");
+            }
+
             _lexicon = new Dictionary<string, LexiconEntry>(DEFAULT_CAPACITY);
             _options = options;
 
@@ -55,6 +61,12 @@ namespace StringMix.Internal {
         /// A list of Tagged Tokens
         /// </returns>
         public List<TaggedToken> Tag(String In) {
+
+            if (In == null)
+            {
+                throw new ArgumentNullException("In");
+            }
+
             List<TaggedToken> ret = new List<TaggedToken>();
             
             // Split string using the configured separators and split options

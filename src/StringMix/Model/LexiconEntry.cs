@@ -6,8 +6,15 @@ using System.Threading.Tasks;
 
 namespace StringMix.Model {
     /// <summary>
-    /// Class to contain the details about a single element of lexicon.
-    /// </summary>
+    /// Class to contain the details about a single element of lexicon. Which is
+    /// a library object collection the provides "definition" to terms that might be found.  
+    /// If callers were working within a problem space of proper names, lexicon would be the 
+    /// mapping of well known terms to a tag.  "Fred" is a first name, so a lexicon entry that 
+    /// would be interesting to properly process that term would perhaps Map "Fred" to the 
+    /// token "F" for first name. "Flintstone" is a last name, and a lexicon entry that would 
+    /// be appropriate for processing that term might map "Flintstone" to "L" for LastName
+    /// </param>
+
     public class LexiconEntry {
         public LexiconEntry() {
             Tags = new List<string>();

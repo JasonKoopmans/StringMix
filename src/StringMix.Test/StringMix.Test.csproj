@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="TaggerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="V2.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\StringMix\StringMix.csproj">

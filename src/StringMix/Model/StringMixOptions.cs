@@ -45,5 +45,10 @@ namespace StringMix.Model {
             Separators.AddRange(AdditionalSeparators);
             this.MatchesAreCaseSensitive = MatchesAreCaseSensitive;
         }
+
+        /// <summary>
+        /// A convenient static field containing a default implementation
+        /// </summary>
+        public static StringMixOptions DEFAULT = new StringMixOptions();
     }
 }
