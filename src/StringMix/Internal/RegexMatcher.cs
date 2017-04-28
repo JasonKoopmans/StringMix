@@ -37,10 +37,19 @@ namespace StringMix.Internal
             // For the reference of callers that recieve the MatchSet, the original set of
             // tokens is included.
             ret.Tokens = tokens;
-            
-            // Use a LINQ .Where() to filter the list of patterns down to only those that 
-            // successfully match the Expression provided.
-            ret.MatchedPatterns = candidates.Where(x => Regex.IsMatch(x.PatternText, Expression, this.Options, this.RegExTimeout)).ToList();
+
+            // Iterate over all of the candidate.  For matches, include them in a matched list.  For
+            // Unmatched items, put in the unmatched list.
+            foreach (var candidate in candidates)
+            {
+                if (Regex.IsMatch(candidate.PatternText, Expression, this.Options, this.RegExTimeout))
+                {
+                    ret.MatchedPatterns.Add(candidate);
+                } else
+                {
+                    ret.UnmatchedPatterns.Add(candidate);
+                }
+            }
 
             return ret;
         }
