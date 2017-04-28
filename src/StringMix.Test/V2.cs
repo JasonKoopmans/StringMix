@@ -14,6 +14,11 @@ namespace StringMix.Test
             var ret = new List<Name>();
             var name = new Name();
 
+            if (set.MatchedPatterns.Count == 0)
+            {
+                return ret;
+            }
+
             name.First = set.Tokens[0].Value;
             name.Last = set.Tokens[1].Value;
 
@@ -155,7 +160,7 @@ namespace StringMix.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(InvalidOperationException))]
         public void MatchRegexIsEmptyString()
         {
             var tokens = "Fred and Wilma Flintstone".Tokenize(GetBasicNameLex());
@@ -173,7 +178,7 @@ namespace StringMix.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(InvalidOperationException))]
         public void MatchRegexIsNull()
         {
             var tokens = "Fred and Wilma Flintstone".Tokenize(GetBasicNameLex());
@@ -193,13 +198,23 @@ namespace StringMix.Test
         [TestMethod]
         public void Transform()
         {
-            List<Name> names= "Fred and Wilma Flintstone".Transform(GetBasicNameLex(), "^FLFL$", new NaiveNameTransformer());
+            List<Name> names= "Fred Flintstone Wilma Flintstone".Transform(GetBasicNameLex(), "^FLFL$", new NaiveNameTransformer());
 
             Assert.IsNotNull(names);
             Assert.IsTrue(names.Count == 2);
             Assert.IsTrue(names[0].First == "Fred");
             Assert.IsTrue(names[1].First == "Wilma");
 
+        }
+
+        [TestMethod]
+        public void TransformNoMatches()
+        {
+            List<Name> names = "Fred Flintstone Wilma Flintstone".Transform(GetBasicNameLex(), "^FF$", new NaiveNameTransformer());
+
+            Assert.IsNotNull(names);
+            Assert.IsTrue(names.Count == 0);
+            
         }
 
         [TestMethod]
@@ -216,7 +231,7 @@ namespace StringMix.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(InvalidOperationException))]
         public void TransformMatchRegExIsNull()
         {
             List<Name> names = "Fred and Wilma Flintstone".Transform(GetBasicNameLex(), null, new NaiveNameTransformer());
@@ -229,7 +244,7 @@ namespace StringMix.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(InvalidOperationException))]
         public void TransformMatchRegExIsEmptyString()
         {
             List<Name> names = "Fred and Wilma Flintstone".Transform(GetBasicNameLex(), String.Empty, new NaiveNameTransformer());

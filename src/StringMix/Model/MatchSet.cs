@@ -16,16 +16,22 @@ namespace StringMix.Model
     public class MatchSet
     {
         
-    /// <summary>
-    /// Tokens are the list of tokens that resulted from Tagging
-    /// </summary>
-    public List<TaggedToken> Tokens = new List<TaggedToken>();
+        /// <summary>
+        /// Tokens are the list of tokens that resulted from Tagging
+        /// </summary>
+        public List<TaggedToken> Tokens = new List<TaggedToken>();
 
-    /// <summary>
-    /// MatchedPatterns are the pattern values that matched according to the lexicon and the expression 
-    /// offered to the Matcher
-    /// </summary>
-    public List<Pattern> MatchedPatterns = new List<Pattern>();
+        /// <summary>
+        /// Unmatched patters are a list of patterns that did not match according to the lexicon and the expression
+        /// offered to the Matcher
+        /// </summary>
+        public List<Pattern> UnmatchedPatterns { get; set; } = new List<Pattern>();
+
+        /// <summary>
+        /// MatchedPatterns are the pattern values that matched according to the lexicon and the expression 
+        /// offered to the Matcher
+        /// </summary>
+        public List<Pattern> MatchedPatterns = new List<Pattern>();
         
     
     }
