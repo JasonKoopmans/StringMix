@@ -209,7 +209,40 @@ namespace StringMix
         }
 
 
-
-        
+        /// <summary>
+        /// A convenience method that performs the full chain of tokenize, tag, Match, and Transform 
+        /// to a string object.  Its the equivilent to doing:
+        /// 
+        /// "Fred Flintstone".Tokenize(lexicon, options).Match("FL").Transform<Name>(NameTransformer);
+        /// 
+        /// </summary>
+        /// <typeparam name="T">
+        /// The type that should be returned by this call
+        /// </typeparam>
+        /// <param name="str">
+        /// The string being operated upon
+        /// </param>
+        /// <param name="lexicon">
+        /// See LexiconEntry 
+        /// </param>
+        /// <param name="options">
+        /// The StringMixOptions that you could have provided to the tokenize method.
+        /// </param>
+        /// <param name="MatchRegEx">
+        /// The Regular Expression that will be tested against all of the patterns of the tokens in the 
+        /// target string.  Can be thought of as the same as a call to .Match(tokens, [match criteria])
+        /// </param>
+        /// <param name="transformer">
+        /// The ITransformer[T] implementation that will be used to convert the matchset to the target object type
+        /// </param>
+        /// <returns>
+        /// an object of type T
+        /// </returns>
+        public static T Transform<T>(this String str, List<LexiconEntry> lexicon, StringMixOptions options,  string MatchRegEx, ITransformer<T> transformer) where T : new()
+        {
+            return Tokenize(str, lexicon, options)
+                .Match(MatchRegEx)
+                .Transform<T>(transformer);
+        }
     }
 }
