@@ -40,6 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Extensions.cs" />
+    <Compile Include="Internal\AbstractBaseMatcher.cs" />
     <Compile Include="Internal\IMatcher.cs" />
     <Compile Include="Internal\ITransformer.cs" />
     <Compile Include="Internal\RegexMatcher.cs" />

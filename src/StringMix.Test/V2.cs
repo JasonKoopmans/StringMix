@@ -160,7 +160,7 @@ namespace StringMix.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(InvalidOperationException))]
         public void MatchRegexIsEmptyString()
         {
             var tokens = "Fred and Wilma Flintstone".Tokenize(GetBasicNameLex());
@@ -178,7 +178,7 @@ namespace StringMix.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(InvalidOperationException))]
         public void MatchRegexIsNull()
         {
             var tokens = "Fred and Wilma Flintstone".Tokenize(GetBasicNameLex());
@@ -231,7 +231,7 @@ namespace StringMix.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(InvalidOperationException))]
         public void TransformMatchRegExIsNull()
         {
             List<Name> names = "Fred and Wilma Flintstone".Transform(GetBasicNameLex(), null, new NaiveNameTransformer());
@@ -244,7 +244,7 @@ namespace StringMix.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(InvalidOperationException))]
         public void TransformMatchRegExIsEmptyString()
         {
             List<Name> names = "Fred and Wilma Flintstone".Transform(GetBasicNameLex(), String.Empty, new NaiveNameTransformer());
