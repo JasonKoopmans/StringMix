@@ -34,7 +34,13 @@ namespace StringMix.Internal {
             foreach (var item in lexicon) {
                 itemvalue = _options.MatchesAreCaseSensitive ? item.Value : item.Value.ToLower();
                 if (_lexicon.ContainsKey(itemvalue)) {
-                    _lexicon[itemvalue].Tags.AddRange(item.Tags);
+                    foreach (var tag in item.Tags)
+                    {
+                        if (!_lexicon[itemvalue].Tags.Contains(tag))
+                        {
+                            _lexicon[itemvalue].Tags.AddRange(item.Tags);
+                        }
+                    }
                 } else {
                     _lexicon.Add(itemvalue, item);
                 }
